@@ -50,7 +50,7 @@ sub doLog{
 }
 
 sub _getEntryYear {
-    my ($entry, $offset_year) = @_; # $picup_year is minus
+    my ($entry, $offset_year) = @_;
 
     my $current_authored_on = $entry->column_values->{'authored_on'};
     
@@ -79,8 +79,8 @@ sub hdler_YearMonthEntries {
     (my $current_entry = $ctx->stash('entry')) || return _no_entry_error($tag);
 
     my $blog_id = $ctx->stash('blog_id');
-    my $picup_year = $args->{year};
-    my $picup_month = $args->{month};
+    my $picup_year = $args->{year} || 1;
+    my $picup_month = $args->{month} || 0;
 
     my $current_authored_on = $current_entry->column_values->{'authored_on'};
     $current_authored_on =~ /^(\d\d\d\d)(\d\d)(\d{8})/;
@@ -88,29 +88,30 @@ sub hdler_YearMonthEntries {
     my $current_month = $2;
     my $current_other = $3;
 
-    $current_year = $current_year - abs($picup_year);
-    $current_month = $current_month - abs($picup_month);
+    # doLog('$1:'.$1);
+    # doLog('$2:'.$2);
+    # doLog('$3:'.$3);
 
-    my $target_year;
-    my $target_month;
 
-    if( $current_month < 0 ){
-        my $before_year = 1;
+    my $target_year = $current_year - abs($picup_year);
+    my $target_month = $current_month - abs($picup_month);
 
+    if( $target_month < 0 ){
         # 複数年前の場合(-33ヶ月とか)の対処
-        $before_year  += $current_month / 12;
-        my $before_month  = $current_month % 12;
+        my $before_year  += $target_month / 12;
+        my $before_month  = $target_month % 12;
 
         $target_year  = $current_year - $before_year;
         $target_month = $current_month - $before_month;
     }
 
     my ($start_month, $end_month) = start_end_month($target_year.$target_month.$current_other);
-    doLog('picup:'.$target_year.$target_month.$current_other);
-    doLog('start:'.$start_month);
-    doLog('end:'.$end_month);
 
-		_publish($ctx, $args, $cond, $blog_id, $start_month, $end_month);
+    # doLog('picup:'.$target_year.$target_month.$current_other);
+    # doLog('start:'.$start_month);
+    # doLog('end:'.$end_month);
+
+    _publish($ctx, $args, $cond, $blog_id, $start_month, $end_month);
 }
 
 sub hdler_YearEntries {
