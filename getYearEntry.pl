@@ -80,13 +80,17 @@ sub hdler_YearMonthEntries {
 
     my $blog_id = $ctx->stash('blog_id');
     my $picup_year = $args->{year} || 1;
-    my $picup_month = $args->{month} || 0;
+#    my $picup_month = $args->{month} || 0;
 
     my $current_authored_on = $current_entry->column_values->{'authored_on'};
-    $current_authored_on =~ /^(\d\d\d\d)(\d\d)(\d{8})/;
+ #   $current_authored_on =~ /^(\d\d\d\d)(\d\d)(\d{8})/;
+    $current_authored_on =~ /^(\d\d\d\d)(\d{10})/;
     my $current_year  = $1;
-    my $current_month = $2;
-    my $current_other = $3;
+    my $current_other = $2;
+
+    # my $current_month = $2;
+    # my $current_other = $3;
+
 
     # doLog('$1:'.$1);
     # doLog('$2:'.$2);
@@ -94,18 +98,19 @@ sub hdler_YearMonthEntries {
 
 
     my $target_year = $current_year - abs($picup_year);
-    my $target_month = $current_month - abs($picup_month);
+#    my $target_month = $current_month - abs($picup_month);
 
-    if( $target_month < 0 ){
-        # 複数年前の場合(-33ヶ月とか)の対処
-        my $before_year  += $target_month / 12;
-        my $before_month  = $target_month % 12;
+    # if( $target_month < 0 ){
+    #     # 複数年前の場合(-33ヶ月とか)の対処
+    #     my $before_year  += $target_month / 12;
+    #     my $before_month  = $target_month % 12;
 
-        $target_year  = $current_year - $before_year;
-        $target_month = $current_month - $before_month;
-    }
+    #     $target_year  = $current_year - $before_year;
+    #     $target_month = $current_month - $before_month;
+    # }
 
     my ($start_month, $end_month) = start_end_month($target_year.$target_month.$current_other);
+    my ($start_month, $end_month) = start_end_month($target_year.$current_other);
 
     # doLog('picup:'.$target_year.$target_month.$current_other);
     # doLog('start:'.$start_month);
